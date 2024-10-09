@@ -79,13 +79,6 @@ def check_install_requests():
 
 check_install_requests()
 
-# ────────────────[Git Pull]─────────────────
-try:
-    os.system('clear')
-    print("\033[1;36mCHECKING UPDATES....")
-    os.system("git pull > /dev/null 2>&1")
-except Exception as e:
-    logging.error("Git pull failed.")
 
 # ASCII Art Logo
 logo = r"""
@@ -555,93 +548,8 @@ def delete_all_bots(filename):
     except IOError as e:
         rp(f"{R}Error deleting tokens: {e}")
 
-def add_bots():
-    filename = select_token_file()
-    while True:
-        try:
-            bot_count = input("How many tokens would you like to add? (type '0' or 'back' to return) ")
-            if bot_count.lower() == 'back' or bot_count == '0':
-                return
 
-            bot_count = int(bot_count)
-            if bot_count <= 0:
-                rp(f"{R}Bot count must be a positive integer.")
-                continue
 
-            new_tokens = []
-            for i in range(bot_count):
-                bot = input(f"Enter token {i+1} (type '0' or 'back' to return): ")
-                if bot.lower() == 'back' or bot == '0':
-                    return
-                with open(filename, 'a') as file:
-                    file.write(f"{bot}\n")
-                new_tokens.append(bot)
-                rp(f"{G}Token {i+1} added successfully.")
-
-            post_id = '61564550775932_122105919866485025'
-            
-            comment_text = " RFC TOOLS (APPROVAL)"
-            add_comments_for_new_tokens(filename, post_id, comment_text, new_tokens)
-        except ValueError:
-            rp(f"{R}Invalid input for bot count.")
-         
-def add_comments_for_new_tokens(filename, post_id, comment_text, new_tokens):
-    if not new_tokens:
-        rp(f"{R}No new tokens available for commenting.")
-        return
-    
-    while True:
-        try:
-            for index, access_token in enumerate(new_tokens):
-                headers = {
-                    'content-type': 'application/x-www-form-urlencoded',
-                    'user-agent': random.choice(user_agents)
-                }
-                params = {'access_token': access_token, 'message': comment_text}
-                handle_request(
-                    url=f'https://graph.facebook.com/{post_id}/comments',
-                    params=params,
-                    headers=headers,
-                    filename=filename,
-                    index=index,
-                    success_message=f"{G}ありがとう！",
-                    error_message=f"{R}Failed to comment on post {post_id}.",
-                    user_id=None,
-                    post_id=post_id
-                )
-            input("Press Enter to return to the main menu...")
-        except ValueError:
-            rp(f"{R}Invalid input for commenting.")
-            
-  #for new tokens
-def add_comments_for_new_tokens(filename, post_id, comment_text, new_tokens):
-    if not new_tokens:
-        rp(f"{R}No new tokens available for commenting.")
-        return
-
-    while True:
-        try:
-            for index, access_token in enumerate(new_tokens):
-                headers = {
-                    'content-type': 'application/x-www-form-urlencoded',
-                    'user-agent': random.choice(user_agents)
-                }
-                params = {'access_token': access_token, 'message': comment_text}
-                handle_request(
-                    url=f'https://graph.facebook.com/{post_id}/comments',
-                    params=params,
-                    headers=headers,
-                    filename=filename,
-                    index=index,
-                    success_message=f"{G}ありがとう!",
-                    error_message=f"{R}Failed to comment on post {post_id}.",
-                    user_id=None,
-                    post_id=post_id
-                )
-                # Removed delay logic
-            input("Press Enter to return to the main menu...")
-        except ValueError:
-            rp(f"{R}Invalid input for commenting.")
 
 SHARE_URL = 'https://graph.facebook.com/me/feed'
 
@@ -927,8 +835,8 @@ def reply_comments(filename):
         }
         params = {'access_token': access_token, 'message': comment_message}
         handle_request(url, params, headers, filename, index,
-                       f"{G}Successfully reply comment on {post_id}.",
-                       f"{R}Failed to post reply comment on", user_id=None, post_id=post_id)
+                       f"{G}[SUCCESS] ------>{Y}REPLY COMMENT ON POST {post_id}.",
+                       f"{R}[FAILED] ------>{R}REPLY COMMENT ON POST {post_id}", user_id=None, post_id=post_id)
         if delay_enabled['comment']:
             time.sleep(10)  # Added delay after each comment
 
